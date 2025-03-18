@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.mllp.MLLPClient;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,11 +18,13 @@ public class Main {
 
         String[] messages = getHL7Messages();
 
-        try (ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1)) {
-            IntStream.range(0, messages.length)
-                    .forEach(i -> scheduledExecutorService.scheduleAtFixedRate(() -> client.sendMessage(messages[i]),
-                            i * seconds, seconds * messages.length, TimeUnit.SECONDS));
-        }
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        IntStream.range(0, messages.length)
+                .forEach(i -> {
+                    scheduledExecutorService.scheduleAtFixedRate(() -> client.sendMessage(messages[i]),
+                            i * seconds, seconds * messages.length, TimeUnit.SECONDS);
+                });
+
     }
 
     private static String[] getHL7Messages() {
